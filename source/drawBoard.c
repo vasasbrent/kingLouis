@@ -53,14 +53,15 @@ char* getFENRow(char* FENString, uint8_t desiredRow, size_t length) {
     return retRow;
 }
 
-void drawBoardFEN(char* FENString, size_t length) {
-    char FENRow[8];
+char getPieceAscii(uint8_t pieceID) {
+    
+}
 
-    for (uint8_t row = 0; row < 8; row++) {
+void drawBoard() {
+    for (uint8_t row = 7; row >= 0; row--) {
         printf("---------------------------------\n|");
-        memcpy(FENRow, getFENRow(FENString, row, length), 8);
         for (uint8_t col = 0; col < 8; col++) {
-            printf(" %c |", FENRow[col]);
+            printf(" %c |", pieceIDs[globalGameState.gameBoard[row * 8 + col]]);
         }
         printf("\n");
     }

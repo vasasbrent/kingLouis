@@ -10,7 +10,7 @@ int main (int argc, char *argv[]) {
     }
 
     digestFEN(cstr, strlen(cstr));
-    drawBoardFEN(cstr, strlen(cstr));
+    drawBoard();
     //for (uint8_t i = 0; i < 64; i++) {
     //    if (!(i % 8))
     //        printf("\n");
