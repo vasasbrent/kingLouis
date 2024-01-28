@@ -1,6 +1,7 @@
 #include <stdint.h>
 
 #define DEFAULT_FEN_STRING "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\0"
+#define ATOI_OFFSET 48
 
 void drawBoard(void);
 void digestFEN(char*, size_t);

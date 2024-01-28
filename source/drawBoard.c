@@ -5,9 +5,19 @@
 #include "gameState.h"
 #include "pieces.h"
 
-#define ATOI_OFFSET 48
-
-GameState globalGameState;
+GameState globalGameState;// = {.gameBoard = {0,0,0,0,0,0,0,0,
+                          //                 0,0,0,0,0,0,0,0,
+                          //                 0,0,0,0,0,0,0,0,
+                          //                 0,0,0,0,0,0,0,0,
+                          //                 0,0,0,0,0,0,0,0,
+                          //                 0,0,0,0,0,0,0,0,
+                          //                 0,0,0,0,0,0,0,0,
+                          //                 0,0,0,0,0,0,0,0,},
+                          //          .toMove = 'w',
+                          //          .castlingAvail = {' ',' ',' ',' '},
+                          //          .enPassantAvail = {0, 0},
+                          //          .halfMoveClock = 0,
+                          //          .fullMoveNumber = 0};
 
 uint8_t getSquareFromAlgebraic(const char* algSquare) {
     uint8_t col = 0, row = 0;
@@ -19,53 +29,15 @@ uint8_t getSquareFromAlgebraic(const char* algSquare) {
     return (row * 8 + col);
 }
 
-char* getFENRow(char* FENString, uint8_t desiredRow, size_t length) {
-    uint8_t stringIndex = 0, slashCounter = 0, retIndex = 0;
-    char FENRow[8] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
-
-    // Find desired section
-    while (stringIndex < length) {
-        if(slashCounter == desiredRow)
-            break;
-        if (FENString[stringIndex] == '/')
-            slashCounter++;
-        stringIndex++;
-    }
-
-    // Populate row
-    while (stringIndex < length) {
-        if (FENString[stringIndex] > '0' && FENString[stringIndex] < '9') {
-            for (uint8_t i = 0; i < atoi(&FENString[stringIndex]); i++){
-                FENRow[retIndex] = ' ';
-                retIndex++;
-            }
-        } else if (FENString[stringIndex] != '/' && FENString[stringIndex] != ' ') {
-            FENRow[retIndex] = FENString[stringIndex];
-            retIndex++;
-        } else {
-            break;
-        }
-        stringIndex++;
-    }
-
-    // Return desired string
-    char* retRow = &FENRow[0];
-    return retRow;
-}
-
-char getPieceAscii(uint8_t pieceID) {
-    
-}
-
 void drawBoard() {
-    for (uint8_t row = 7; row >= 0; row--) {
-        printf("---------------------------------\n|");
+    for (uint8_t row = 8; row > 0; row--) {
+        printf("  ---------------------------------\n%c |", (row + ATOI_OFFSET));
         for (uint8_t col = 0; col < 8; col++) {
-            printf(" %c |", pieceIDs[globalGameState.gameBoard[row * 8 + col]]);
+            printf(" %c |", pieceIDs[globalGameState.gameBoard[(row - 1) * 8 + col]]);
         }
         printf("\n");
     }
-    printf("---------------------------------\n");
+    printf("  ---------------------------------\n    a   b   c   d   e   f   g   h\n");
 }
 
 void digestFEN(char* FENString, size_t length) {

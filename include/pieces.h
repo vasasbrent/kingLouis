@@ -34,17 +34,4 @@ uint16_t validMoves[NUM_PIECES] = {0x0000, //0b0000000000000000 no piece
                                    0x10ff, //0b0001000011111111 queen
                                    0x03ff};//0b0000000011111111 king
 
-char pieceIDs[NUM_PIECES * 2] = {' ',
-                                 'p',
-                                 'n',
-                                 'b',
-                                 'r',
-                                 'q',
-                                 'k',
-                                 ' ',
-                                 'P',
-                                 'N',
-                                 'B',
-                                 'R',
-                                 'Q',
-                                 'K',}
+char pieceIDs[NUM_PIECES * 2 + 1] = {' ', 'P', 'N', 'B', 'R', 'Q', 'K', ' ', ' ', 'p', 'n', 'b', 'r', 'q', 'k'};

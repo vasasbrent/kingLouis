@@ -1,3 +1,4 @@
+SDIR=./source
 IDIR=./include
 CC=gcc
 CFLAGS=-I$(IDIR)
@@ -15,7 +16,7 @@ _OBJ = main.o drawBoard.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
-$(ODIR)/%.o: %.c $(DEPS)
+$(ODIR)/%.o: $(SDIR)/%.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 kingLouis: $(OBJ)
