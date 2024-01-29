@@ -1,3 +1,8 @@
+#ifndef GAME_STATE_H
+#define GAME_STATE_H
+
+#include "types.h"
+
 #define BOARD_SIZE 64
 
 typedef struct GameState {
@@ -10,3 +15,5 @@ typedef struct GameState {
 } GameState;
 
 extern GameState globalGameState;
+
+#endif
