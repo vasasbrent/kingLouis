@@ -1,6 +1,8 @@
 #ifndef UCI_H
 #define UCI_H
 
-void processInput(char*);
+#include <stdint.h>
+
+void processInput(const char*, uint8_t);
 
 #endif

@@ -12,7 +12,7 @@ void clearInputBuffer(void){
 }
 
 int main (int argc, char *argv[]) {
-    char cstr[255] = DEFAULT_FEN_STRING;
+    char cstr[INPUT_SIZE] = DEFAULT_FEN_STRING;
     char input[INPUT_SIZE];
 
     if (argc > 1) {
@@ -23,8 +23,9 @@ int main (int argc, char *argv[]) {
     drawBoard();
 
     while(1) {
-        scanf("%8s", &input[0]);
-        processInput(&input[0]);
+        // TODO: Un-hardcode this, should be possible, you're just dumb
+        scanf("%255s", &input[0]);
+        processInput(&input[0], strlen(input));
 
         for (uint8_t i = 0; i < 8; i++) {
             input[i] = ' ';
