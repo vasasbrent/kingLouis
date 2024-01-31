@@ -3,6 +3,10 @@
 int8_t standardMoveSet[8] = {7, 8, 9, 1, -7, -8, -9, -1};
 int8_t modifiedMoveSet[8] = {15, 17, 10, -6, -15, -17, -10, 6};
 
+float pieceValue[NUM_PIECES] = {0,
+                                1.0f,
+                                }
+
 uint16_t validMoves[NUM_PIECES] = {0x0000, //0b0000000000000000 no piece
                                    0x0A07, //0b0000101000000111 pawn
                                    0x01ff, //0b0000000111111111 knight
