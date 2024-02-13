@@ -2,6 +2,7 @@
 #define PIECES_H
 
 #include "types.h"
+#include "gameState.h"
 
 #define BLACK_MASK 0b1000
 #define WHITE_MASK 0b0000
@@ -34,5 +35,7 @@ extern int8_t modifiedMoveSet[8];
 extern uint16_t validMoves[NUM_PIECES];
 
 extern char pieceIDs[NUM_PIECES * 2 + 1];
+
+extern uint8_t squareValues[NUM_PIECES][BOARD_SIZE];
 
 #endif
