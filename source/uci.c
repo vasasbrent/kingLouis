@@ -11,5 +11,6 @@ void processInput(const char* inputBuffer, uint8_t inputSize) {
     if (!strcmp(&inputBuffer[0], &uciString[0])) {
         printf("id name %s %s\n", getProgramName(), getVersionNumber());
         printf("id author %s\n", getAuthor());
+        printf("uciok");
     }
 }

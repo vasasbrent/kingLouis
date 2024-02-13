@@ -14,7 +14,6 @@ void clearInputBuffer(void){
 }
 
 int main (int argc, char *argv[]) {
-    clock_t beginTime = clock();
     char cstr[INPUT_SIZE] = DEFAULT_FEN_STRING;
     char input[INPUT_SIZE];
 
@@ -25,9 +24,6 @@ int main (int argc, char *argv[]) {
     digestFEN(cstr, strlen(cstr));
     drawBoard();
 
-    
-
-    /*
     while(1) {
         // TODO: Un-hardcode this, should be possible, you're just dumb
         scanf("%255s", &input[0]);
@@ -38,11 +34,6 @@ int main (int argc, char *argv[]) {
         }
         clearInputBuffer();
     }
-    */
-    clock_t endTime = clock();
-    float time_spent = (float)(endTime - beginTime) / CLOCKS_PER_SEC;
-
-    printf("Program executed in: %f seconds", time_spent);
 
     return 0;
 }
