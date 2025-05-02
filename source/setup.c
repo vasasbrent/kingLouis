@@ -3,8 +3,6 @@
 #include "setup.h"
 #include "pieces.h"
 
-GameState globalGameState;
-
 uint8_t getSquareFromAlgebraic(const char* algSquare) {
     uint8_t col = 0, row = 0;
     char colOffset = algSquare[0] - ATOI_OFFSET;
@@ -15,7 +13,7 @@ uint8_t getSquareFromAlgebraic(const char* algSquare) {
     return (row * 8 + col);
 }
 
-void digestFEN(char* FENString, size_t length) {
+GameState digestFEN(char* FENString, size_t length) {
     uint8_t col = 0, row = 7;
     uint8_t fenIndex = 0;
 
@@ -32,15 +30,25 @@ void digestFEN(char* FENString, size_t length) {
                 col++;
             }
         } else {
-            globalGameState.gameBoard[row * 8 + col] =\
-                (((FENString[fenIndex] >= 'a' && FENString[fenIndex] <= 'z') ? BLACK_MASK : WHITE_MASK) |\
-                (((((((FENString[fenIndex] == 'p' || FENString[fenIndex] == 'P') ? PAWN :\
-                ((((((FENString[fenIndex] == 'n' || FENString[fenIndex] == 'N') ? KNIGHT :\
-                (((((FENString[fenIndex] == 'b' || FENString[fenIndex] == 'B') ? BISHOP :\
-                ((((FENString[fenIndex] == 'r' || FENString[fenIndex] == 'R') ? ROOK :\
-                (((FENString[fenIndex] == 'q' || FENString[fenIndex] == 'Q') ? QUEEN :\
-                ((FENString[fenIndex] == 'k' || FENString[fenIndex] == 'K') ? KING :\
-                0))))))))))))))))))))));
+            // Handle piece type
+            if (FENString[fenIndex] == 'p' || FENString[fenIndex] == 'P')
+                globalGameState.gameBoard[row * 8 + col] = PAWN;
+            else if (FENString[fenIndex] == 'n' || FENString[fenIndex] == 'N')
+                globalGameState.gameBoard[row * 8 + col] = KNIGHT;
+            else if (FENString[fenIndex] == 'b' || FENString[fenIndex] == 'B')
+                globalGameState.gameBoard[row * 8 + col] = BISHOP;
+            else if (FENString[fenIndex] == 'r' || FENString[fenIndex] == 'R')
+                globalGameState.gameBoard[row * 8 + col] = ROOK;
+            else if (FENString[fenIndex] == 'q' || FENString[fenIndex] == 'Q')
+                globalGameState.gameBoard[row * 8 + col] = QUEEN;
+            else if (FENString[fenIndex] == 'k' || FENString[fenIndex] == 'K')
+                globalGameState.gameBoard[row * 8 + col] = KING;
+            else
+                globalGameState.gameBoard[row * 8 + col] = NO_PIECE;
+
+            // Handle piece color
+            if (FENString[fenIndex] >= 'a' && FENString[fenIndex] <= 'z')
+                globalGameState.gameBoard[row * 8 + col] |= BLACK_MASK;
             col++;
         }
         fenIndex++;
@@ -88,4 +96,6 @@ void digestFEN(char* FENString, size_t length) {
         fenIndex++, tempIndex++;
     }
     globalGameState.fullMoveNumber = atoi(tempStr);
+
+    return globalGameState;
 }

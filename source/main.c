@@ -5,8 +5,10 @@
 #include "drawBoard.h"
 #include "uci.h"
 
-#define DEFAULT_FEN_STRING "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\0"
+#define DEFAULT_FEN_STRING "rnbqkbnr/ppppppp1/8/7p/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\0"
 #define INPUT_SIZE 255
+
+GameState globalGameState;
 
 void clearInputBuffer(void){
     int c;
@@ -21,8 +23,8 @@ int main (int argc, char *argv[]) {
         memcpy(cstr, argv[1], strlen(argv[1]));
     }
 
-    digestFEN(cstr, strlen(cstr));
-    drawBoard();
+    globalGameState = digestFEN(cstr, strlen(cstr));
+    drawBoard(globalGameState);
 
     while(1) {
         // TODO: Un-hardcode this, should be possible, you're just dumb

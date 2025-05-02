@@ -2,7 +2,8 @@
 #define SETUP_H
 
 #include <stddef.h>
+#include "gameState.h"
 
-void digestFEN(char*, size_t);
+GameState digestFEN(char*, size_t);
 
 #endif

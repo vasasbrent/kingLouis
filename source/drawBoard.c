@@ -4,9 +4,9 @@
 #include "gameState.h"
 #include "pieces.h"
 
-GameState globalGameState;
+//GameState globalGameState;
 
-void drawBoard() {
+void drawBoard(GameState globalGameState) {
     for (uint8_t row = 8; row > 0; row--) {
         printf("   ---------------------------------\n %c |", (row + ATOI_OFFSET));
         for (uint8_t col = 0; col < 8; col++) {
