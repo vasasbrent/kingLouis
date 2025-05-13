@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include "gameState.h"
 #include "setup.h"
 #include "pieces.h"
 

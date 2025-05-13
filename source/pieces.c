@@ -9,7 +9,7 @@ float pieceValue[NUM_PIECES] = {0,
                                 3.0f,
                                 5.0f,
                                 9.0f,
-                                10.0f};
+                                200.0f};
 
 uint16_t validMoves[NUM_PIECES] = {0x0000, //0b0000000000000000 no piece
                                    0x0A07, //0b0000101000000111 pawn
