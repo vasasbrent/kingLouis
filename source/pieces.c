@@ -1,7 +1,7 @@
 #include "pieces.h"
 
-int8_t standardMoveSet[8] = {7, 8, 9, 1, -7, -8, -9, -1};
-int8_t modifiedMoveSet[8] = {15, 17, 10, -6, -15, -17, -10, 6};
+int8_t moveSets[2][8] = {{7, 8, 9, 1, -7, -8, -9, -1},\
+                         {15, 17, 10, -6, -15, -17, -10, 6}};
 
 float pieceValue[NUM_PIECES] = {0,
                                 1.0f,

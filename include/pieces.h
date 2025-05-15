@@ -6,6 +6,7 @@
 
 #define BLACK_MASK 0b1000
 #define WHITE_MASK 0b0000
+#define PIECE_MASK 0b0111
 
 #define NO_PIECE   0b0000
 #define PAWN       0b0001
@@ -29,8 +30,7 @@
 #define PAWN_FIRST_DOUBLE 4
 #define CONTINUOUS_MOVE   5
 
-extern int8_t standardMoveSet[8];
-extern int8_t modifiedMoveSet[8];
+extern int8_t moveSets[2][8];
 
 extern uint16_t validMoves[NUM_PIECES];
 

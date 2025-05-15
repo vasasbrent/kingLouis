@@ -7,7 +7,7 @@
 #include "drawBoard.h"
 #include "uci.h"
 
-#define DEFAULT_FEN_STRING "rnbqkbnr/ppppppp1/8/7p/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\0"
+#define DEFAULT_FEN_STRING "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\0"
 
 GameState globalGameState;
 
