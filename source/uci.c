@@ -31,6 +31,7 @@ enum input_strings {
 void clearInputBuffer(void){
     int c;
     while ((c = getchar()) != '\n' && c != EOF) { }
+
 }
 
 void argParse(const char* inputBuffer, char** args) {
@@ -121,13 +122,17 @@ void processInput(const char* inputBuffer, uint8_t inputSize) {
 
 void* listenForInput(void* arg) {
     char input[INPUT_SIZE];
+    uint8_t inputReceived = 0;
+
     while(1) {
-        scanf("%[^\n]255s", &input[0]);
-        processInput(input, strlen(input));
-    
-        for (uint8_t i = 0; i < 8; i++) {
-            input[i] = ' ';
+        inputReceived = scanf("%[^\n]65535s", &input[0]);
+
+        if (inputReceived > 0) {
+            processInput(input, strlen(input));
+            memset(input, ' ', INPUT_SIZE * sizeof(char));
+            inputReceived = 0;
         }
+
         clearInputBuffer();
     }
 }
