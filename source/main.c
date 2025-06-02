@@ -26,7 +26,7 @@ int main (int argc, char *argv[]) {
     pthread_create(&threadUci, NULL, listenForInput, NULL);
 
     while(1) {
-        printf(".");
+        //printf(".");
         sleep(1);
     }
 
