@@ -12,6 +12,8 @@
 GameState globalGameState;
 
 int main (int argc, char *argv[]) {
+    // Default to start position
+    // Different positions will be handled by input parser
     char cstr[INPUT_SIZE] = DEFAULT_FEN_STRING;
 
     if (argc > 1) {

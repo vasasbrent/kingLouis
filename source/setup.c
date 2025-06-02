@@ -13,6 +13,7 @@ uint8_t getSquareFromAlgebraic(const char* algSquare) {
 }
 
 GameState digestFEN(char* FENString, size_t length) {
+    GameState localGameState;
     uint8_t col = 0, row = 7;
     uint8_t fenIndex = 0;
 
@@ -25,29 +26,29 @@ GameState digestFEN(char* FENString, size_t length) {
             row--; col = 0;
         } else if (FENString[fenIndex] > '0' && FENString[fenIndex] < '9') {
             for (uint8_t i = 0; i < atoi(&FENString[fenIndex]); i++) {
-                globalGameState.gameBoard[row * 8 + col] = NO_PIECE;
+                localGameState.gameBoard[row * 8 + col] = NO_PIECE;
                 col++;
             }
         } else {
             // Handle piece type
             if (FENString[fenIndex] == 'p' || FENString[fenIndex] == 'P')
-                globalGameState.gameBoard[row * 8 + col] = PAWN;
+                localGameState.gameBoard[row * 8 + col] = PAWN;
             else if (FENString[fenIndex] == 'n' || FENString[fenIndex] == 'N')
-                globalGameState.gameBoard[row * 8 + col] = KNIGHT;
+                localGameState.gameBoard[row * 8 + col] = KNIGHT;
             else if (FENString[fenIndex] == 'b' || FENString[fenIndex] == 'B')
-                globalGameState.gameBoard[row * 8 + col] = BISHOP;
+                localGameState.gameBoard[row * 8 + col] = BISHOP;
             else if (FENString[fenIndex] == 'r' || FENString[fenIndex] == 'R')
-                globalGameState.gameBoard[row * 8 + col] = ROOK;
+                localGameState.gameBoard[row * 8 + col] = ROOK;
             else if (FENString[fenIndex] == 'q' || FENString[fenIndex] == 'Q')
-                globalGameState.gameBoard[row * 8 + col] = QUEEN;
+                localGameState.gameBoard[row * 8 + col] = QUEEN;
             else if (FENString[fenIndex] == 'k' || FENString[fenIndex] == 'K')
-                globalGameState.gameBoard[row * 8 + col] = KING;
+                localGameState.gameBoard[row * 8 + col] = KING;
             else
-                globalGameState.gameBoard[row * 8 + col] = NO_PIECE;
+                localGameState.gameBoard[row * 8 + col] = NO_PIECE;
 
             // Handle piece color
             if (FENString[fenIndex] >= 'a' && FENString[fenIndex] <= 'z')
-                globalGameState.gameBoard[row * 8 + col] |= BLACK_MASK;
+                localGameState.gameBoard[row * 8 + col] |= BLACK_MASK;
             col++;
         }
         fenIndex++;
@@ -55,23 +56,23 @@ GameState digestFEN(char* FENString, size_t length) {
     fenIndex++; // skip delimiting space
 
     // Populate To Move
-    globalGameState.toMove = FENString[fenIndex];
+    localGameState.toMove = FENString[fenIndex];
     fenIndex += 2;
 
     // Castling availability
     tempIndex = 0;
     while (FENString[fenIndex] != ' ') {
-        globalGameState.castlingAvail[tempIndex] = FENString[fenIndex];
+        localGameState.castlingAvail[tempIndex] = FENString[fenIndex];
         fenIndex++, tempIndex++;
     }
     fenIndex++; // skip delimiting space
 
     // Handle the brutal machinations of the 19th century French
     tempIndex = 0;
-    globalGameState.enPassantAvail[0] = globalGameState.enPassantAvail[1] = 0;
+    localGameState.enPassantAvail[0] = localGameState.enPassantAvail[1] = 0;
     if (FENString[fenIndex] != '-') {
         while (FENString[fenIndex] != ' ') {
-            globalGameState.enPassantAvail[tempIndex] = getSquareFromAlgebraic(&FENString[fenIndex]);
+            localGameState.enPassantAvail[tempIndex] = getSquareFromAlgebraic(&FENString[fenIndex]);
             fenIndex += 2;
         }
     } else {
@@ -85,7 +86,7 @@ GameState digestFEN(char* FENString, size_t length) {
         tempStr[tempIndex] = FENString[fenIndex];
         fenIndex++, tempIndex++;
     }
-    globalGameState.halfMoveClock = atoi(tempStr);
+    localGameState.halfMoveClock = atoi(tempStr);
     fenIndex++;
 
     // Total move number
@@ -94,7 +95,7 @@ GameState digestFEN(char* FENString, size_t length) {
         tempStr[tempIndex] = FENString[fenIndex];
         fenIndex++, tempIndex++;
     }
-    globalGameState.fullMoveNumber = atoi(tempStr);
+    localGameState.fullMoveNumber = atoi(tempStr);
 
-    return globalGameState;
+    return localGameState;
 }

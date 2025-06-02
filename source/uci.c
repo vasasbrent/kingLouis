@@ -13,12 +13,18 @@
 static const char* commands[] = \
     {"uci",
      "debug",
-     "isready"};
+     "isready",
+     "registration",
+     "position",
+     "quit"};
 
 enum input_strings {
     UCI = 0,
     DEBUG,
     IS_READY,
+    REGISTRATION,
+    POSITION,
+    QUIT,
     INPUT_STRINGS_LEN
 };
 
@@ -89,6 +95,18 @@ void processInput(const char* inputBuffer, uint8_t inputSize) {
         case IS_READY:
             printf("readyok\n");
             break;
+
+        case REGISTRATION:
+            printf("registration checking\nregistration ok\n");
+            break;
+        
+        case POSITION:
+            // TODO: Handle parsing fenstring, if arg is startpos then fen is default
+            // TODO: Handle parsing moves
+            break;
+        
+        case QUIT:
+            exit(0);
 
         default:
             printf("MISSED ALL CASES!\nCommand: %s\nInput Buffer: %s\nString Length: %d\n", args[0], inputBuffer, inputSize);
