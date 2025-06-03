@@ -1,4 +1,8 @@
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include "types.h"
+#include "gameState.h"
 #include "setup.h"
 #include "pieces.h"
 

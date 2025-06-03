@@ -1,6 +1,8 @@
+#include <stdint.h>
+#include "types.h"
+#include "gameState.h"
 #include "moves.h"
 #include "pieces.h"
-#include "gameState.h"
 
 void getValidMoves(GameState testGameState, int* numValidMoves, char** validMoveArr) {
     uint8_t toMoveMask = (testGameState.toMove == 'w') ? WHITE_MASK : BLACK_MASK;

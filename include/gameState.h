@@ -4,6 +4,7 @@
 #include "types.h"
 
 #define BOARD_SIZE 64
+#define DEFAULT_FEN_STRING "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\0"
 
 typedef struct GameState {
     uint8_t       gameBoard[BOARD_SIZE];
