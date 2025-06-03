@@ -22,6 +22,7 @@
 
 volatile int searching = 0;
 volatile bool pondering = false;
+volatile bool isDebug = false;
 
 // Structure to hold search parameters
 typedef struct SearchParams {
@@ -78,7 +79,7 @@ void applyMoves(const char** moves, int numMoves, GameState* state) {
     for (int i = 0; i < numMoves; i++) {
         const char* move = moves[i];
         if (!move || strlen(move) < 4) {  // Minimum move length is 4 (e.g., "e2e4")
-            printf("info string Invalid move format: %s\n", move ? move : "null");
+            if (isDebug) printf("info string Invalid move format: %s\n", move ? move : "null");
             continue;
         }
 
@@ -91,7 +92,7 @@ void applyMoves(const char** moves, int numMoves, GameState* state) {
         // Validate coordinates
         if (fromFile < 0 || fromFile > 7 || fromRank < 0 || fromRank > 7 ||
             toFile < 0 || toFile > 7 || toRank < 0 || toRank > 7) {
-            printf("info string Move coordinates out of bounds: %s\n", move);
+            if (isDebug) printf("info string Move coordinates out of bounds: %s\n", move);
             continue;
         }
 
@@ -100,7 +101,7 @@ void applyMoves(const char** moves, int numMoves, GameState* state) {
 
         // Validate source square has a piece
         if (state->gameBoard[fromSquare] == NO_PIECE) {
-            printf("info string No piece at source square: %s\n", move);
+            if (isDebug) printf("info string No piece at source square: %s\n", move);
             continue;
         }
 
@@ -113,7 +114,7 @@ void applyMoves(const char** moves, int numMoves, GameState* state) {
                 case 'b': promotionPiece = BISHOP; break;
                 case 'n': promotionPiece = KNIGHT; break;
                 default:
-                    printf("info string Invalid promotion piece: %c\n", move[4]);
+                    if (isDebug) printf("info string Invalid promotion piece: %c\n", move[4]);
                     continue;
             }
             if (state->gameBoard[fromSquare] & BLACK_MASK) {
@@ -140,7 +141,7 @@ void handlePosition(char** args) {
     char fen[100] = {0};
     
     if (!args || !args[argIdx]) {
-        printf("info string Invalid position command\n");
+        if (isDebug) printf("info string Invalid position command\n");
         return;
     }
 
@@ -156,7 +157,7 @@ void handlePosition(char** args) {
             argIdx++;
         }
     } else {
-        printf("info string Expected 'startpos' or 'fen', got: %s\n", args[argIdx]);
+        if (isDebug) printf("info string Expected 'startpos' or 'fen', got: %s\n", args[argIdx]);
         return;
     }
     
@@ -167,7 +168,7 @@ void handlePosition(char** args) {
     if (args[argIdx] && !strcmp(args[argIdx], "moves")) {
         argIdx++;
         if (!args[argIdx]) {
-            printf("info string 'moves' specified but no moves given\n");
+            if (isDebug) printf("info string 'moves' specified but no moves given\n");
             return;
         }
 
@@ -182,7 +183,7 @@ void handlePosition(char** args) {
         if (numMoves > 0) {
             const char** moves = (const char**)malloc(numMoves * sizeof(char*));
             if (!moves) {
-                printf("info string Failed to allocate moves array\n");
+                if (isDebug) printf("info string Failed to allocate moves array\n");
                 return;
             }
 
@@ -390,7 +391,7 @@ void argParse(const char* inputBuffer, char** args) {
 
 void processInput(const char* inputBuffer, size_t inputSize) {
     if (!inputBuffer || inputSize == 0 || inputSize > INPUT_BUFFER_SIZE) {
-        printf("info string Invalid input buffer\n");
+        if (isDebug) printf("info string Invalid input buffer\n");
         return;
     }
 
@@ -399,7 +400,7 @@ void processInput(const char* inputBuffer, size_t inputSize) {
     bool shouldExit = false;  // Flag to indicate if we should exit after cleanup
     args = (char**)malloc(MAX_ARGS * sizeof(char*));
     if (!args) {
-        printf("info string Memory allocation failed\n");
+        if (isDebug) printf("info string Memory allocation failed\n");
         return;
     }
 
@@ -415,7 +416,7 @@ void processInput(const char* inputBuffer, size_t inputSize) {
                 free(args[j]);
             }
             free(args);
-            printf("info string Memory allocation failed\n");
+            if (isDebug) printf("info string Memory allocation failed\n");
             return;
         }
         args[i][0] = '\0';
@@ -425,7 +426,7 @@ void processInput(const char* inputBuffer, size_t inputSize) {
 
     // Validate first argument exists
     if (args[0][0] == '\0') {
-        printf("info string Empty command\n");
+        if (isDebug) printf("info string Empty command\n");
         goto cleanup;
     }
 
@@ -440,7 +441,7 @@ void processInput(const char* inputBuffer, size_t inputSize) {
     }
 
     if (!found) {
-        printf("info string Unknown command: %s\n", args[0]);
+        if (isDebug) printf("info string Unknown command: %s\n", args[0]);
         goto cleanup;
     }
 
@@ -457,11 +458,11 @@ void processInput(const char* inputBuffer, size_t inputSize) {
             if (!args[DEBUG_SWITCH_ARG_IDX] || 
                 (strcmp(args[DEBUG_SWITCH_ARG_IDX], DEBUG_ON) && 
                  strcmp(args[DEBUG_SWITCH_ARG_IDX], DEBUG_OFF))) {
-                printf("info string Invalid debug argument. Usage: debug [on|off]\n");
+                if (isDebug) printf("info string Invalid debug argument. Usage: debug [on|off]\n");
             } else if (!strcmp(args[DEBUG_SWITCH_ARG_IDX], DEBUG_ON)) {
-                printf("info string debug turned on\n");
+                if (isDebug) printf("info string debug turned on\n");
             } else {
-                printf("info string debug turned off\n");
+                if (isDebug) printf("info string debug turned off\n");
             }
             break;
 
@@ -495,7 +496,7 @@ void processInput(const char* inputBuffer, size_t inputSize) {
             break;
             
         default:
-            printf("info string Command processing error\n");
+            if (isDebug) printf("info string Command processing error\n");
             break;
     }
 
@@ -526,11 +527,11 @@ void* listenForInput(void* arg) {
             // Check if it's EOF or an error
             if (feof(stdin)) {
                 // EOF - engine should exit
-                printf("info string Received EOF, exiting\n");
+                if (isDebug) printf("info string Received EOF, exiting\n");
                 exit(0);
             } else {
                 // Error reading input - report but continue
-                printf("info string Error reading input\n");
+                if (isDebug) printf("info string Error reading input\n");
                 clearerr(stdin);
                 continue;
             }
@@ -545,7 +546,7 @@ void* listenForInput(void* arg) {
         
         // Check if line was too long (no newline found)
         if (len == INPUT_BUFFER_SIZE - 1) {
-            printf("info string Input too long, truncated\n");
+            if (isDebug) printf("info string Input too long, truncated\n");
             clearInputBuffer(); // Clear remaining input
         }
         
