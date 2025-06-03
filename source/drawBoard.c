@@ -16,13 +16,3 @@ void drawBoard(GameState globalGameState) {
     }
     printf("   ---------------------------------\n     a   b   c   d   e   f   g   h\n");
 }
-
-uint64_t getValidMoves(uint8_t position) {
-    uint64_t validMoves = 0;
-
-    // useless to strip identifier, must be used
-    //uint8_t piece = globalGameState.gameBoard[position] & ~BLACK_MASK;
-    //printf("%d ", piece);
-
-    return validMoves;
-}

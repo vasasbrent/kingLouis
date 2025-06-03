@@ -4,5 +4,6 @@
 #include "gameState.h"
 
 void getValidMoves(GameState, int*, char**);
+void applyMoves(const char**, int, GameState*);
 
 #endif

@@ -2,30 +2,20 @@
 #define UCI_H
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "gameState.h"
 
 #define INPUT_SIZE 65535
 #define MAX_ARGS 100
+#define MAX_ARG_LENGTH 256
 
-// Result codes for command processing
-typedef enum {
-    PROCESS_OK = 0,
-    PROCESS_ERROR_ALLOC,
-    PROCESS_ERROR_ARGS,
-    PROCESS_ERROR_COMMAND
-} ProcessResult;
-
-// UCI command handlers
 void processInput(const char*, size_t);
 void* listenForInput(void*);
-void handlePosition(char** args);
-void handleGo(char** args);
+void handlePosition(char args[MAX_ARGS][MAX_ARG_LENGTH]);
+void handleGo(char args[MAX_ARGS][MAX_ARG_LENGTH]);
 void stopSearch(void);
 
-// Position parsing helpers
-void applyMoves(const char** moves, int numMoves, GameState* state);
-
-// Search control
 extern volatile int searching;
+extern volatile bool isDebug;
 
 #endif

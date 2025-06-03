@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 #include "uci.h"
 #include "version.h"
 #include "setup.h"
 #include "pieces.h"
 #include "gameState.h"
+#include "moves.h"
 
 // CONSTANTS
 // "debug" command constants
@@ -17,14 +17,11 @@
 // Longest reasonable command would be "position fen" followed by longest possible FEN
 // plus a long sequence of moves
 #define INPUT_BUFFER_SIZE 8192
-#define MAX_ARGS 100
-#define MAX_ARG_LENGTH 256
 
 volatile int searching = 0;
 volatile bool pondering = false;
 volatile bool isDebug = false;
 
-// Structure to hold search parameters
 typedef struct SearchParams {
     int wtime;          // White's remaining time in ms
     int btime;          // Black's remaining time in ms
@@ -70,73 +67,22 @@ void clearInputBuffer(void) {
     while ((c = getchar()) != '\n' && c != EOF) { }
 }
 
-
-void applyMoves(const char** moves, int numMoves, GameState* state) {
-    if (!moves || !state || numMoves <= 0) {
+void parseMoves(char args[MAX_ARGS][MAX_ARG_LENGTH], int numMoves, int moveStart) {
+    const char** moves = (const char**)malloc(numMoves * sizeof(char*));
+    if (!moves) {
+        if (isDebug) printf("info string Failed to allocate moves array\n");
         return;
     }
 
     for (int i = 0; i < numMoves; i++) {
-        const char* move = moves[i];
-        if (!move || strlen(move) < 4) {  // Minimum move length is 4 (e.g., "e2e4")
-            if (isDebug) printf("info string Invalid move format: %s\n", move ? move : "null");
-            continue;
-        }
-
-        // Convert algebraic notation to board coordinates
-        int fromFile = move[0] - 'a';
-        int fromRank = move[1] - '1';
-        int toFile = move[2] - 'a';
-        int toRank = move[3] - '1';
-
-        // Validate coordinates
-        if (fromFile < 0 || fromFile > 7 || fromRank < 0 || fromRank > 7 ||
-            toFile < 0 || toFile > 7 || toRank < 0 || toRank > 7) {
-            if (isDebug) printf("info string Move coordinates out of bounds: %s\n", move);
-            continue;
-        }
-
-        int fromSquare = fromRank * 8 + fromFile;
-        int toSquare = toRank * 8 + toFile;
-
-        // Validate source square has a piece
-        if (state->gameBoard[fromSquare] == NO_PIECE) {
-            if (isDebug) printf("info string No piece at source square: %s\n", move);
-            continue;
-        }
-
-        // Handle promotion
-        if (strlen(move) == 5) {
-            uint8_t promotionPiece = NO_PIECE;
-            switch(move[4]) {
-                case 'q': promotionPiece = QUEEN; break;
-                case 'r': promotionPiece = ROOK; break;
-                case 'b': promotionPiece = BISHOP; break;
-                case 'n': promotionPiece = KNIGHT; break;
-                default:
-                    if (isDebug) printf("info string Invalid promotion piece: %c\n", move[4]);
-                    continue;
-            }
-            if (state->gameBoard[fromSquare] & BLACK_MASK) {
-                promotionPiece |= BLACK_MASK;
-            }
-            state->gameBoard[toSquare] = promotionPiece;
-        } else {
-            state->gameBoard[toSquare] = state->gameBoard[fromSquare];
-        }
-        state->gameBoard[fromSquare] = NO_PIECE;
-
-        // Update side to move
-        state->toMove = (state->toMove == 'w') ? 'b' : 'w';
-
-        // Update move counters
-        if (state->toMove == 'w') {
-            state->fullMoveNumber++;
-        }
+        moves[i] = args[moveStart++];
     }
+    
+    applyMoves(moves, numMoves, &globalGameState);
+    free(moves);
 }
 
-void handlePosition(char** args) {
+void handlePosition(char args[MAX_ARGS][MAX_ARG_LENGTH]) {
     int argIdx = 1;
     char fen[100] = {0};
     
@@ -150,7 +96,6 @@ void handlePosition(char** args) {
         argIdx++;
     } else if (!strcmp(args[argIdx], "fen")) {
         argIdx++;
-        // Concatenate FEN parts until "moves" or end
         while (args[argIdx] && strcmp(args[argIdx], "moves")) {
             strcat(fen, args[argIdx]);
             strcat(fen, " ");
@@ -161,7 +106,6 @@ void handlePosition(char** args) {
         return;
     }
     
-    // Parse FEN using existing function
     globalGameState = digestFEN(fen, strlen(fen));
     
     // Handle moves if present
@@ -180,53 +124,33 @@ void handlePosition(char** args) {
             argIdx++;
         }
 
-        if (numMoves > 0) {
-            const char** moves = (const char**)malloc(numMoves * sizeof(char*));
-            if (!moves) {
-                if (isDebug) printf("info string Failed to allocate moves array\n");
-                return;
-            }
-
-            // Reset argIdx and copy moves
-            argIdx = moveStart;
-            for (int i = 0; i < numMoves; i++) {
-                moves[i] = args[argIdx++];
-            }
-
-            applyMoves(moves, numMoves, &globalGameState);
-            free(moves);
-        }
+        if (numMoves > 0)
+            parseMoves(args, numMoves, moveStart);
     }
 }
 
-void handleGo(char** args) {
-    SearchParams params = {0};  // Initialize all to 0/NULL/false
+void handleGo(char args[MAX_ARGS][MAX_ARG_LENGTH]) {
+    SearchParams params = {0};
     int argIdx = 1;
     
     // Parse all parameters
     while (args[argIdx] != NULL && args[argIdx][0] != '\0') {
         if (!strcmp(args[argIdx], "searchmoves")) {
-            // Count how many moves are listed
-            int moveCount = 0;
             argIdx++;
-            while (args[argIdx] != NULL && args[argIdx][0] != '\0' && 
-                   strlen(args[argIdx]) >= 4) {  // Valid moves are at least 4 chars
-                moveCount++;
+            if (!args[argIdx]) {
+                if (isDebug) printf("info string 'searchmoves' specified but no moves given\n");
+                return;
+            }
+            
+            int numMoves = 0;
+            int moveStart = argIdx;
+            while (args[argIdx] != NULL && strlen(args[argIdx]) > 0) {
+                numMoves++;
                 argIdx++;
             }
-            // Allocate and store the moves
-            if (moveCount > 0) {
-                params.searchmoves = (const char**)malloc(moveCount * sizeof(char*));
-                params.num_searchmoves = moveCount;
-                argIdx -= moveCount;
-                for (int i = 0; i < moveCount; i++) {
-                    size_t len = strlen(args[argIdx]) + 1;  // +1 for null terminator
-                    char* move = (char*)malloc(len);
-                    strcpy(move, args[argIdx]);
-                    params.searchmoves[i] = move;
-                    argIdx++;
-                }
-            }
+            
+            if (numMoves > 0)
+                parseMoves(args, numMoves, moveStart);
         }
         else if (!strcmp(args[argIdx], "ponder")) {
             params.ponder = true;
@@ -341,7 +265,7 @@ void stopSearch(void) {
     }
 }
 
-void argParse(const char* inputBuffer, char** args) {
+void argParse(const char* inputBuffer, char args[MAX_ARGS][MAX_ARG_LENGTH]) {
     if (!inputBuffer || !args) return;
 
     size_t inputLen = strlen(inputBuffer);
@@ -396,29 +320,28 @@ void processInput(const char* inputBuffer, size_t inputSize) {
     }
 
     // Allocate argument array
-    char** args = NULL;
     bool shouldExit = false;  // Flag to indicate if we should exit after cleanup
-    args = (char**)malloc(MAX_ARGS * sizeof(char*));
-    if (!args) {
-        if (isDebug) printf("info string Memory allocation failed\n");
-        return;
-    }
+    char args[MAX_ARGS][MAX_ARG_LENGTH];// = (char**)malloc(MAX_ARGS * sizeof(char*));
+    //if (!args) {
+    //    if (isDebug) printf("info string Memory allocation failed\n");
+    //    return;
+    //}
 
     // Initialize all pointers to NULL for safer cleanup
-    memset(args, 0, MAX_ARGS * sizeof(char*));
+    //memset(args, 0, MAX_ARGS * sizeof(char*));
 
     // Allocate space for each argument
     for (int i = 0; i < MAX_ARGS; i++) {
-        args[i] = (char*)malloc(MAX_ARG_LENGTH * sizeof(char));
-        if (!args[i]) {
-            // Cleanup previously allocated memory
-            for (int j = 0; j < i; j++) {
-                free(args[j]);
-            }
-            free(args);
-            if (isDebug) printf("info string Memory allocation failed\n");
-            return;
-        }
+    //    args[i] = (char*)malloc(MAX_ARG_LENGTH * sizeof(char));
+    //    if (!args[i]) {
+    //        // Cleanup previously allocated memory
+    //        for (int j = 0; j < i; j++) {
+    //            free(args[j]);
+    //        }
+    //        free(args);
+    //        if (isDebug) printf("info string Memory allocation failed\n");
+    //        return;
+    //    }
         args[i][0] = '\0';
     }
 
@@ -460,9 +383,10 @@ void processInput(const char* inputBuffer, size_t inputSize) {
                  strcmp(args[DEBUG_SWITCH_ARG_IDX], DEBUG_OFF))) {
                 if (isDebug) printf("info string Invalid debug argument. Usage: debug [on|off]\n");
             } else if (!strcmp(args[DEBUG_SWITCH_ARG_IDX], DEBUG_ON)) {
+                isDebug = true;
                 if (isDebug) printf("info string debug turned on\n");
             } else {
-                if (isDebug) printf("info string debug turned off\n");
+                isDebug = false;
             }
             break;
 
@@ -502,10 +426,10 @@ void processInput(const char* inputBuffer, size_t inputSize) {
 
 cleanup:
     // Clean up allocated memory
-    for (int i = 0; i < MAX_ARGS; i++) {
-        free(args[i]);
-    }
-    free(args);
+    //for (int i = 0; i < MAX_ARGS; i++) {
+    //    free(args[i]);
+    //}
+    //free(args);
     
     if (shouldExit) {
         exit(0);  // Only exit if flag is set
