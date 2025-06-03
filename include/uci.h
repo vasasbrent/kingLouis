@@ -16,7 +16,7 @@ typedef enum {
 } ProcessResult;
 
 // UCI command handlers
-ProcessResult processInput(const char*, size_t);
+void processInput(const char*, size_t);
 void* listenForInput(void*);
 void handlePosition(char** args);
 void handleGo(char** args);
