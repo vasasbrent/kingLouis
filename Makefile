@@ -22,7 +22,15 @@ $(ODIR)/%.o: $(SDIR)/%.c $(DEPS)
 kingLouis: $(OBJ)
 	$(CC) -o $(ADIR) $^ $(CFLAGS) $(LIBS)
 
-.PHONY: clean
+.PHONY: clean check
 
 clean:
 	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~
+
+check:
+	@if [ ! -f "$(ADIR)" ]; then \
+		echo "Error: kingLouis.exe not found in artifacts folder"; \
+		exit 1; \
+	else \
+		echo "kingLouis.exe found successfully"; \
+	fi
