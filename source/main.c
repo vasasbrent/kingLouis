@@ -16,7 +16,8 @@ int main (int argc, char *argv[]) {
     char cstr[255] = DEFAULT_FEN_STRING;
 
     if (argc > 1) {
-        memcpy(cstr, argv[1], strlen(argv[1]));
+        printf("Command line arguments not supported yet\n");
+        return -1;
     }
 
     globalGameState = digestFEN(cstr, strlen(cstr));
