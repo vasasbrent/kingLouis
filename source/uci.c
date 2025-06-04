@@ -273,7 +273,6 @@ void argParse(const char* inputBuffer, char args[MAX_ARGS][MAX_ARG_LENGTH]) {
     size_t argChar = 0;
     bool inArg = false;
 
-    // Process each character
     for (size_t i = 0; i < inputLen && argNum < MAX_ARGS; i++) {
         char c = inputBuffer[i];
 
@@ -307,7 +306,6 @@ void argParse(const char* inputBuffer, char args[MAX_ARGS][MAX_ARG_LENGTH]) {
         argNum++;
     }
 
-    // Ensure remaining arguments are empty
     for (size_t i = argNum; i < MAX_ARGS; i++) {
         args[i][0] = '\0';
     }
@@ -319,38 +317,17 @@ void processInput(const char* inputBuffer, size_t inputSize) {
         return;
     }
 
-    // Allocate argument array
-    bool shouldExit = false;  // Flag to indicate if we should exit after cleanup
-    char args[MAX_ARGS][MAX_ARG_LENGTH];// = (char**)malloc(MAX_ARGS * sizeof(char*));
-    //if (!args) {
-    //    if (isDebug) printf("info string Memory allocation failed\n");
-    //    return;
-    //}
+    char args[MAX_ARGS][MAX_ARG_LENGTH];
 
-    // Initialize all pointers to NULL for safer cleanup
-    //memset(args, 0, MAX_ARGS * sizeof(char*));
-
-    // Allocate space for each argument
     for (int i = 0; i < MAX_ARGS; i++) {
-    //    args[i] = (char*)malloc(MAX_ARG_LENGTH * sizeof(char));
-    //    if (!args[i]) {
-    //        // Cleanup previously allocated memory
-    //        for (int j = 0; j < i; j++) {
-    //            free(args[j]);
-    //        }
-    //        free(args);
-    //        if (isDebug) printf("info string Memory allocation failed\n");
-    //        return;
-    //    }
         args[i][0] = '\0';
     }
 
     argParse(inputBuffer, args);
 
-    // Validate first argument exists
     if (args[0][0] == '\0') {
         if (isDebug) printf("info string Empty command\n");
-        goto cleanup;
+        return;
     }
 
     // Find command in command list
@@ -365,7 +342,7 @@ void processInput(const char* inputBuffer, size_t inputSize) {
 
     if (!found) {
         if (isDebug) printf("info string Unknown command: %s\n", args[0]);
-        goto cleanup;
+        return;
     }
 
     // Process command
@@ -415,24 +392,13 @@ void processInput(const char* inputBuffer, size_t inputSize) {
             break;
             
         case QUIT:
-            shouldExit = true;
-            goto cleanup;
+            if (isDebug) printf("info string Quitting\n");
+            exit(0);
             break;
             
         default:
             if (isDebug) printf("info string Command processing error\n");
             break;
-    }
-
-cleanup:
-    // Clean up allocated memory
-    //for (int i = 0; i < MAX_ARGS; i++) {
-    //    free(args[i]);
-    //}
-    //free(args);
-    
-    if (shouldExit) {
-        exit(0);  // Only exit if flag is set
     }
 }
 
@@ -448,9 +414,7 @@ void* listenForInput(void* arg) {
         
         // Read a line of input, handling EOF and errors
         if (fgets(input, INPUT_BUFFER_SIZE, stdin) == NULL) {
-            // Check if it's EOF or an error
             if (feof(stdin)) {
-                // EOF - engine should exit
                 if (isDebug) printf("info string Received EOF, exiting\n");
                 exit(0);
             } else {
@@ -471,7 +435,7 @@ void* listenForInput(void* arg) {
         // Check if line was too long (no newline found)
         if (len == INPUT_BUFFER_SIZE - 1) {
             if (isDebug) printf("info string Input too long, truncated\n");
-            clearInputBuffer(); // Clear remaining input
+            clearInputBuffer();
         }
         
         // Skip empty lines
