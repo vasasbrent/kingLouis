@@ -30,12 +30,12 @@
 #define PAWN_FIRST_DOUBLE 4
 #define CONTINUOUS_MOVE   5
 
-extern int8_t moveSets[2][8];
+extern int8_t moveSets[2][8][2];
 
 extern uint16_t validMoves[NUM_PIECES];
 
 extern char pieceIDs[NUM_PIECES * 2 + 1];
 
-extern uint8_t squareValues[NUM_PIECES][BOARD_SIZE];
+extern uint8_t squareValues[NUM_PIECES][BOARD_SIDE][BOARD_SIDE];
 
 #endif

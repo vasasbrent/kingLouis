@@ -7,10 +7,10 @@
 //GameState globalGameState;
 
 void drawBoard(GameState globalGameState) {
-    for (uint8_t row = 8; row > 0; row--) {
-        printf("   ---------------------------------\n %c |", (row + ATOI_OFFSET));
-        for (uint8_t col = 0; col < 8; col++) {
-            printf(" %c |", pieceIDs[globalGameState.gameBoard[(row - 1) * 8 + col]]);
+    for (uint8_t rank = 0; rank < BOARD_SIDE; rank++) {
+        printf("   ---------------------------------\n %d |", 8 - rank);
+        for (uint8_t file = 0; file < BOARD_SIDE; file++) {
+            printf(" %c |", pieceIDs[globalGameState.gameBoard[rank][file]]);
         }
         printf("\n");
     }
