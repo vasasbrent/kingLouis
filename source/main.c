@@ -6,18 +6,18 @@
 #include "setup.h"
 #include "drawBoard.h"
 #include "uci.h"
-
-#define DEFAULT_FEN_STRING "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1\0"
+#include "gameState.h"
 
 GameState globalGameState;
 
 int main (int argc, char *argv[]) {
     // Default to start position
     // Different positions will be handled by input parser
-    char cstr[INPUT_SIZE] = DEFAULT_FEN_STRING;
+    char cstr[255] = DEFAULT_FEN_STRING;
 
     if (argc > 1) {
-        memcpy(cstr, argv[1], strlen(argv[1]));
+        printf("Command line arguments not supported yet\n");
+        return -1;
     }
 
     globalGameState = digestFEN(cstr, strlen(cstr));

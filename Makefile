@@ -9,10 +9,10 @@ ADIR=./artifacts/kingLouis.exe
 
 LIBS=-lm
 
-_DEPS = drawBoard.h pieces.h setup.h gameState.h types.h uci.h version.h analysis.h
+_DEPS = drawBoard.h pieces.h setup.h gameState.h types.h uci.h version.h analysis.h moves.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = main.o drawBoard.o pieces.o setup.o uci.o version.o analysis.o
+_OBJ = main.o drawBoard.o pieces.o setup.o uci.o version.o analysis.o moves.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 

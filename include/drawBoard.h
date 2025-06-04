@@ -5,6 +5,5 @@
 #include "gameState.h"
 
 void drawBoard(GameState);
-uint64_t getValidMoves(uint8_t);
 
 #endif
